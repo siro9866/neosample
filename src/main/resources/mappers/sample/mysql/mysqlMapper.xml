@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding= "UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace= "sample.mysql.mysql">
+
+
+	<select id ="mysqlListCnt" parameterType="com.neoforth.sample.mysql.vo.MysqlVO" resultType="integer">
+		/* sample.mysql.mysqlListCnt 카운트 */
+
+		select count(1)
+		from(
+			<include refid="listQuery"/>
+			) a
+	</select>
+	
+
+	<select id ="mysqlList" parameterType="com.neoforth.sample.mysql.vo.MysqlVO" resultType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.mysql.mysqlList 리스트*/
+
+		select @i as totCnt, a.*
+		from
+		(
+			select
+				@i := @i + 1 as rowNum
+				, CEIL((@j := @j + 1)/#{pageSize}) as pageNum
+				, imsi.*
+			from(
+			
+						<include refid="listQuery"/>
+						
+						order by sample.sample_id desc
+						
+				) imsi, (select @i := 0, @j := 0) temp		
+		) a			
+		where pageNum = #{pageNum}
+		order by sample_id desc
+	</select>
+	
+	<sql id="listQuery">
+		/*	listQuery 리스트 쿼리	*/
+		select
+			sample.sample_id
+			, sample.sample_name
+			, sample.sample_subject
+			, sample.sample_contents
+			, sample.sample_order
+			, sample.hot_yn
+			, sample.del_yn
+			, sample.in_date
+			, sample.in_user
+			, sample.in_ip 
+			, sample.up_date
+			, sample.up_user
+			, sample.up_ip
+			, (select file_id from tb_file where upload_group = #{upload_group} and master_id = sample.sample_id and del_yn = 'N' limit 1) file_id
+		from tb_sample sample
+		where del_yn = 'N'
+		<if test="searchValue != null and searchValue != ''">
+		and (sample.sample_name like CONCAT('%', #{searchValue}, '%'))
+		or  (sample.sample_subject like CONCAT('%', #{searchValue}, '%'))
+		or  (sample.sample_contents like CONCAT('%', #{searchValue}, '%'))
+		</if>
+	</sql>	
+	
+	<select id ="mysqlView" parameterType="com.neoforth.sample.mysql.vo.MysqlVO" resultType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.mysql.mysqlView 상세 */
+		select
+			sample_id
+			, sample_name
+			, sample_subject
+			, sample_contents
+			, sample_order
+			, hot_yn
+			, del_yn
+			, in_date
+			, in_user
+			, in_ip 
+			, up_date
+			, up_user
+			, up_ip
+			, (select file_id from tb_file where upload_group = #{upload_group} and master_id = sample_id and del_yn = 'N' limit 1) file_id
+		from tb_sample
+		where del_yn = 'N'
+		and sample_id = #{sample_id}
+	</select>
+	
+	<insert id ="mysqlInsert" parameterType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.mysql.mysqlInsert 등록 */
+		insert into tb_sample( 
+			sample_name
+			, sample_subject
+			, sample_contents
+			, sample_order
+			, hot_yn
+			, in_date
+			, in_user
+			, in_ip
+		) values ( 
+			trim(#{sample_name})
+			, trim(#{sample_subject})
+			, trim(#{sample_contents})
+			, trim(#{sample_order})
+			, #{hot_yn}
+			, NOW()
+			, #{in_user}
+			, #{in_ip}
+			)
+	<selectKey keyProperty="sample_id" resultType="String">
+		SELECT LAST_INSERT_ID()
+	</selectKey>
+	</insert>
+	
+	<update id="mysqlUpdate" parameterType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.mysql.mysqlUpdate 수정 */
+		update tb_sample 
+			set
+			sample_name = trim(#{sample_name})
+			, sample_subject = trim(#{sample_subject})
+			, sample_contents = trim(#{sample_contents})
+			, sample_order = trim(#{sample_order})
+			, hot_yn = #{hot_yn}
+			, up_date = NOW()
+			, up_user = #{up_user}
+			, up_ip = #{up_ip}
+		where sample_id = #{sample_id}
+	</update>
+
+	<update id="mysqlDelete" parameterType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.mysql.mysqlDelete 삭제 */
+		update tb_sample 
+			set
+			del_yn = 'Y'
+			, up_date = NOW()
+			, up_user = #{up_user}
+			, up_ip = #{up_ip}
+		where sample_id = #{sample_id}
+	</update>
+	
+	<select id="excelDownload" parameterType="com.neoforth.sample.mysql.vo.MysqlVO" resultType="java.util.HashMap">
+		/* sample.mysql.excelDownload Excel 다운로드 */
+		SELECT
+			SAMPLE_ID
+			, SAMPLE_NAME
+			, SAMPLE_SUBJECT
+			, SAMPLE_CONTENTS
+			, SAMPLE_ORDER
+			, HOT_YN
+			, DEL_YN
+			, IN_DATE
+			, IN_USER
+			, IN_IP 
+			, UP_DATE
+			, UP_USER
+			, UP_IP
+		FROM TB_SAMPLE
+		WHERE DEL_YN = 'N'
+		<if test="searchValue != null and searchValue != ''">
+		AND (SAMPLE_NAME LIKE CONCAT('%', #{searchValue}, '%'))
+		OR  (SAMPLE_SUBJECT LIKE CONCAT('%', #{searchValue}, '%'))
+		OR  (SAMPLE_CONTENTS LIKE CONCAT('%', #{searchValue}, '%'))
+		</if>
+	</select>	
+	
+	<insert id="mysqlInsertExcel" parameterType="com.neoforth.sample.mysql.vo.MysqlVO">
+		INSERT /*+ APPEND */ INTO  tb_sample (
+				sample_name
+				, sample_subject
+				, sample_contents
+				, sample_order
+				, hot_yn
+				, in_date
+				, in_user
+				, in_ip
+		) VALUES (
+			trim(#{sample_name})
+			, trim(#{sample_subject})
+			, trim(#{sample_contents})
+			, trim(#{sample_order})
+			, #{hot_yn}
+			, NOW()
+			, #{in_user}
+			, #{in_ip}
+		)
+	</insert>
+	
+</mapper>

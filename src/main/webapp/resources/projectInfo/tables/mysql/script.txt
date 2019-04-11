@@ -1,0 +1,7 @@
+
+CREATE DATABASE neoforthDB CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+create user 'neoforth'@'localhost' identified by 'spdhvhtm';
+
+grant all privileges on *.* to 'neoforth'@'localhost';
+grant all privileges on neoforthDB.* to 'neoforth'@'localhost';

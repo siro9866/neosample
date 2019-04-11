@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace= "sample.oracle">
+
+	<select id ="sampleListCnt" parameterType="com.neoforth.sample.mysql.vo.MysqlVO" resultType="Integer">
+		/* sample.oracle.sampleListCnt 총 카운트 */
+				SELECT count(1) totCnt
+				FROM(
+				
+					<include refid="listQeury" />
+					
+				)
+	</select>
+
+	<select id ="sampleList" parameterType="com.neoforth.sample.mysql.vo.MysqlVO" resultType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.oracle.sampleList 샘플리스트*/
+		SELECT pagingB.*
+		FROM(
+			SELECT ROWNUM AS rNum, pagingA.*
+			FROM(
+			
+				<include refid="listQeury" />
+			
+			) pagingA
+			WHERE ROWNUM &lt;= #{pageEndRow}
+		) pagingB
+		WHERE pagingB.rNum &gt;= #{pageStartRow}
+	</select>
+	
+	<sql id="listQeury">
+		/*	리스트쿼리	*/
+		SELECT
+			sample_id
+			, sample_name
+			, del_yn
+			, in_user
+			, in_ip
+			, in_date
+			, up_user
+			, up_ip
+			, up_date
+		FROM tb_sample
+		WHERE del_yn = 'N'
+		<if test="searchValue != null and searchValue != ''">
+		AND sample_name like '%' || #{searchValue} || '%'
+		</if>
+		order by sample_id desc
+	</sql>
+	
+	
+	<select id ="sampleView" parameterType="com.neoforth.sample.mysql.vo.MysqlVO" resultType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.oracle.sampleView 샘플상세*/
+		SELECT
+			sample_id
+			, sample_name
+			, del_yn
+			, in_user
+			, in_ip
+			, in_date
+			, up_user
+			, up_ip
+			, up_date
+		FROM tb_sample 
+		WHERE del_yn = 'N'
+		AND sample_id = #{sample_id}
+		
+	</select>
+	
+	<insert id ="sampleInsert" parameterType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.oracle.sampleInsert 샘플 등록*/
+		<selectKey keyProperty="sample_id" resultType="String" order="BEFORE">
+			SELECT SEQ_SAMPLE_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		insert into tb_sample( 
+			sample_id
+			, sample_name
+			, in_user
+			, in_ip
+			, in_date
+		) values ( 
+			#{sample_id}
+			, trim(#{sample_name})
+			, #{in_user}
+			, #{in_ip}
+			, SYSDATE
+			)
+	</insert>
+	
+	
+	<update id="sampleUpdate" parameterType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.oracle.sampleUpdate 샘플수정*/
+		update tb_sample 
+			set
+			sample_name = trim(#{sample_name})
+			, del_yn = #{del_yn}
+			, up_date = SYSDATE
+			, up_user = #{up_user}
+			, up_ip = #{up_ip}
+		where sample_id = #{sample_id}
+	</update>
+
+
+	<delete id="sampleDelete" parameterType="com.neoforth.sample.mysql.vo.MysqlVO">
+		/* sample.oracle.sampleDelete 샘플삭제*/
+		update tb_sample
+			set del_yn = 'Y'
+			, up_date = SYSDATE
+			, up_user = #{up_user}
+			, up_ip = #{up_ip}
+		where sample_id = #{sample_id}
+	</delete>
+	
+	
+</mapper>

@@ -1,0 +1,22 @@
+drop table tb_file;
+
+CREATE TABLE `tb_file` (
+			`file_id` int(10) NOT NULL AUTO_INCREMENT,
+			`upload_group` varchar(20) COMMENT '업로드그룹',
+			`upload_group_sub` varchar(20) COMMENT '업로드그룹 서브',
+			`master_table` varchar(20) COMMENT '게시글table',
+			`master_id` varchar(20) COMMENT '게시글아이디',
+			`org_file_name` varchar(100) COMMENT '파일명',
+			`sys_file_name` varchar(100) COMMENT '시스템파일명',
+			`file_path` varchar(20) COMMENT '경로',
+			`file_size` varchar(20) COMMENT '사이즈',
+			`file_ext` varchar(10) COMMENT '확장자',
+			`del_yn` char(1) DEFAULT 'N', 
+			`in_date` datetime DEFAULT NULL,
+			`in_user` varchar(50) DEFAULT NULL, 
+			`in_ip` varchar(20) DEFAULT NULL, 
+			`up_date` datetime DEFAULT NULL,
+			`up_user` varchar(50) DEFAULT NULL, 
+			`up_ip` varchar(20) DEFAULT NULL,
+			PRIMARY KEY (`file_id`)
+) DEFAULT CHARSET=utf8;

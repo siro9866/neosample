@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sample.common.file">
+
+	<select id ="getFileList" parameterType="com.neoforth.sample.common.vo.FileVO" resultType="com.neoforth.sample.common.vo.FileVO">
+		/* sample.common.file.getFileList	파일리스트 가져오기	*/
+		SELECT
+			file_id
+			, upload_group
+			, upload_group_sub
+			, master_table
+			, master_id
+			, org_file_name
+			, sys_file_name
+			, file_path
+			, file_size
+			, file_ext
+			, del_yn 
+			, in_date
+			, in_user 
+			, in_ip 
+			, up_date
+			, up_user 
+			, up_ip
+		FROM TB_FILE
+		WHERE del_yn = 'N'
+		AND upload_group = #{upload_group}
+		AND upload_group_sub = #{upload_group_sub}
+		AND master_id = #{master_id}
+		ORDER BY file_id DESC
+	</select>
+
+	<select id ="getFile" parameterType="com.neoforth.sample.common.vo.FileVO" resultType="com.neoforth.sample.common.vo.FileVO">
+		/* sample.common.file.getFile	파일 가져오기	*/
+		SELECT
+			file_id
+			, upload_group
+			, upload_group_sub
+			, master_id
+			, org_file_name
+			, sys_file_name
+			, file_path
+			, file_size
+			, file_ext
+			, del_yn
+			, in_user
+			, in_ip
+			, in_date
+			, up_user
+			, up_ip
+			, up_date
+		FROM TB_FILE
+		WHERE file_id = #{file_id}
+	</select>
+
+
+	<insert id="insertFile" parameterType="com.neoforth.sample.common.vo.FileVO">
+	/*	sample.common.file.insertFile	파일등록*/
+		INSERT INTO TB_FILE
+		( 
+			UPLOAD_GROUP
+			, UPLOAD_GROUP_SUB
+			, MASTER_TABLE
+			, MASTER_ID
+			, ORG_FILE_NAME
+			, SYS_FILE_NAME
+			, FILE_PATH
+			, FILE_SIZE
+			, FILE_EXT
+			, IN_USER
+			, IN_IP
+			, IN_DATE
+		)
+		VALUES (
+			#{upload_group}
+			, #{upload_group_sub}
+			, #{master_table}
+			, #{master_id}
+			, #{org_file_name}
+			, #{sys_file_name}
+			, #{file_path}
+			, #{file_size}
+			, #{file_ext}
+			, #{in_user}
+			, #{in_ip}
+			, NOW()
+		)
+	</insert>
+
+	<update id="deleteFile" parameterType="com.neoforth.sample.common.vo.FileVO">
+	/*	sample.common.file.deleteFile	파일삭제*/
+		UPDATE TB_FILE SET
+		del_yn = 'Y'
+		WHERE file_id = #{file_id}
+	</update>
+
+	<update id="deleteCancelFile" parameterType="com.neoforth.sample.common.vo.FileVO">
+	/*	sample.common.file.deleteCancelFile	파일삭제취소 */
+		UPDATE TB_FILE SET
+		del_yn = 'N'
+		WHERE file_id = #{file_id}
+	</update>
+
+	<update id="deleteAllFileList" parameterType="com.neoforth.sample.common.vo.FileVO">
+	/*	sample.common.file.deleteAllFileList	파일삭제*/
+		UPDATE TB_FILE SET
+			del_yn = 'Y'
+			, up_date = NOW()
+			, up_user = #{up_user}
+			, up_ip = #{up_ip}
+		WHERE upload_group = #{upload_group}
+		AND master_id = #{master_id}
+	</update>
+
+	<update id="deleteFileList" parameterType="com.neoforth.sample.common.vo.FileVO">
+	/*	sample.common.file.deleteFileList	파일삭제*/
+		UPDATE TB_FILE SET
+			del_yn = 'Y'
+			, up_date = NOW()
+			, up_user = #{up_user}
+			, up_ip = #{up_ip}
+		WHERE upload_group = #{upload_group}
+		AND upload_group_sub = #{upload_group_sub}
+		AND master_id = #{master_id}
+	</update>
+
+</mapper>

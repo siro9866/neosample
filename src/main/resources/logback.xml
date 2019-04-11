@@ -1,0 +1,28 @@
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>▶ %-5level %d{HH:mm:ss.SSS} [%thread] [%method:%line] - %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="com.neoforth.app" level="DEBUG"></logger>
+	<logger name="com.neoforth.sample" level="DEBUG"></logger>
+	<logger name="org.springframework.context" level="DEBUG"></logger>
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+	</root>
+	
+	<logger name="jdbc" level="OFF" />
+
+	<logger name="jdbc.sqlonly" level="OFF" />
+	<logger name="jdbc.sqltiming" level="DEBUG" />
+	<logger name="jdbc.audit" level="OFF" />
+	<logger name="jdbc.resultset" level="OFF" />
+	<logger name="jdbc.resultsettable" level="DEBUG" />
+	<logger name="jdbc.connection" level="OFF" />
+
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
