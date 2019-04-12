@@ -52,4 +52,7 @@ xml:#{config['UPLOAD_GROUP_SAMPLE']}
 	<entry key="UPLOAD_GROUP_SUB_SAMPLE_EXCEL">SAMPLE_EXCEL1</entry>
 	<!-- E:파일 업로드 그룹 -->
 	
+	<!-- 주소 API 인증키 -->	
+	<entry key="JUSO_API_KEY_POP">U01TX0FVVEgyMDE5MDEwMjIwMDY0MzEwODQxMjk=</entry>
+	<entry key="JUSO_API_KEY_SEARCH">U01TX0FVVEgyMDE5MDQxMjEwNDE0MjEwODY0NzY=</entry>
 </properties>

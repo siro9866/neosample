@@ -55,6 +55,15 @@
 		</ul>
 	</div>
 
+	<div id="wrapper">
+		<ul>
+			<li id="/sample/api/juso/jusoAPI.neo">주소 API(팝업)</li>
+			<li id="/sample/api/juso/jusoAPISearch.neo">주소 API(검색)</li>
+
+			<li id="/sample/api/map/mapList.neo">지도</li>
+		</ul>
+	</div>
+
 <script>
 
 	$("ul li").on("click", function(){
