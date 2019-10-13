@@ -12,39 +12,30 @@
 <meta charset="UTF-8">
 <title>Testing websockets</title>
 </head>
-<body>
-	<fieldset>
-		<textarea id="messageWindow" rows="10" cols="50" readonly="true"></textarea>
-		<br />
-		<input id="inputMessage" type="text" /> <input type="submit" value="send" onclick="send()" />
-	</fieldset>
-</body>
-<script type="text/javascript">
-	var textarea = document.getElementById("messageWindow");
-	var webSocket = new WebSocket('ws://localhost:8080/sample/socket/broadcasting');
-	var inputMessage = document.getElementById('inputMessage');
-	webSocket.onerror = function(event) {
-		onError(event)
-	};
-	webSocket.onopen = function(event) {
-		onOpen(event)
-	};
-	webSocket.onmessage = function(event) {
-		onMessage(event)
-	};
-	function onMessage(event) {
-		textarea.value += "상대 : " + event.data + "\n";
-	}
-	function onOpen(event) {
-		textarea.value += "연결 성공\n";
-	}
-	function onError(event) {
-		alert(event.data);
-	}
-	function send() {
-		textarea.value += "나 : " + inputMessage.value + "\n";
-		webSocket.send(inputMessage.value);
-		inputMessage.value = "";
-	}
-</script>
+	<!-- 메시지 표시 영역 -->
+	<textarea id="messageTextArea" readonly="readonly" rows="10" cols="45"></textarea>
+	<br />
+	<!-- 송신 메시지 텍스트박스 -->
+	<input type="text" id="messageText" size="50" />
+	<!-- 송신 버튼 -->
+	<input type="button" value="Send" onclick="sendMessage()" />
+	<script type="text/javascript">
+		//웹소켓 초기화
+		var webSocket = new WebSocket("ws://localhost:8080/sample/socket/broadcasting");
+		var messageTextArea = document.getElementById("messageTextArea");
+		//메시지가 오면 messageTextArea요소에 메시지를 추가한다.
+		webSocket.onmessage = function processMessge(message) {
+			//Json 풀기
+			var jsonData = JSON.parse(message.data);
+			if (jsonData.message != null) {
+				messageTextArea.value += jsonData.message + "\n"
+			}
+		}
+		//메시지 보내기
+		function sendMessage() {
+			var messageText = document.getElementById("messageText");
+			webSocket.send(messageText.value);
+			messageText.value = "";
+		}
+	</script>
 </html>
